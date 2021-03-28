@@ -1,0 +1,64 @@
+#include <Adafruit_SSD1306.h>
+#include <Arduino.h>
+
+#define I2C_ADDRESS 0x3C
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiWire.h"
+#define menuFont X11fixed7x14
+#define fontW 7
+#define fontH 15
+SSD1306AsciiWire oled;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+  oled.begin(&Adafruit128x64, I2C_ADDRESS);
+  oled.setFont(menuFont);
+
+  oled.clear();
+  oled.setCursor(0, 0);
+  oled.print("EMS Device");
+  oled.setCursor(0, 2);
+  oled.print("Water Tester");
+  oled.setCursor(0, 4);
+  oled.print("Beta");
+  oled.setCursor(0, 6);
+  oled.print("ESP v1.3 ");
+  delay(4000);
+  oled.clear();
+
+}
+
+void loop() {
+  oled.setCursor(0, 0);
+  oled.print("MEASUREMENTS");
+
+  float temperature = getTemp();
+  Serial.println(temperature);
+  oled.setCursor(0, 2);
+  oled.print("Temp: "); oled.print(temperature);oled.print(" C   ");
+
+  float EC =  getEC(temperature);
+  Serial.println(EC);
+  oled.setCursor(0, 4);
+  oled.print("  EC: "); oled.print(EC);oled.print(" ms/cm");
+
+ /* float TDS =  getTDS(temperature);
+  Serial.println(TDS);
+  oled.setCursor(0, 4);
+  oled.print("TDS: "); oled.print(TDS);oled.print("ppm ");*/
+
+  float pH = getpH();
+  float turbidity = getTurb();
+
+  oled.setCursor(0, 6);
+  oled.print("  pH: "); oled.print(pH);
+
+  Serial.println(" .  ============================================ .  ");
+
+  //oled.setCursor(0, 8);
+  //oled.print("Turbidity: "); oled.print(turbidity);oled.print("units ");
+
+  delay(10); //just here to slow down the output so it is easier to read
+
+}

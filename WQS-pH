@@ -1,0 +1,31 @@
+// Code for pH probe
+
+#define SensorPinpH A0
+#define Offset -1.00            //deviation compensate
+#define LED 13
+#define VREF 3.3
+#define RESO 4095
+int MeasurementsToAveragepH = 20;
+
+
+float getpH(){
+
+    float avgpH = 0;
+    float voltage;
+    float pH;
+
+  for(int i = 0; i < MeasurementsToAveragepH; ++i)
+  {
+    avgpH += analogRead(SensorPinpH);
+    delay(10);
+  }
+  avgpH /= MeasurementsToAveragepH;
+
+
+   voltage = avgpH*VREF/RESO;//check VREF
+   pH = 3.5*(3.3-voltage)+Offset;
+Serial.print("pH Value:  ");      Serial.println(pH);
+return pH;
+
+
+}

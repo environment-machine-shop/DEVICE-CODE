@@ -1,0 +1,42 @@
+//Code for the total dissolved solids probe
+
+
+#define SensorPinTDS 2  //for Esp8266
+#define VREF 3.3 // analog reference voltage(Volt) of the ADC
+#define RESO 4095
+
+int MeasurementsToAverageTDS = 20;
+
+float temperature;
+float tdsValue;
+
+
+float getTDS(float t) {
+  pinMode(SensorPinTDS,INPUT);
+  temperature = t;
+
+ float avgTDS = 0;
+
+  for(int i = 0; i < MeasurementsToAverageTDS; ++i)
+  {
+    avgTDS += analogRead(SensorPinTDS);
+    delay(10);
+  }
+  avgTDS /= MeasurementsToAverageTDS;
+
+
+  avgTDS  = (avgTDS) * (float)VREF / RESO;
+  float compensationCoefficient=1.0+0.02*(temperature-25.0);
+  float compensationVolatge = avgTDS/ compensationCoefficient;
+  tdsValue=(133.42*compensationVolatge*compensationVolatge*compensationVolatge - 255.86*compensationVolatge*compensationVolatge + 857.39*compensationVolatge)*0.5;
+
+  // send it to the computer as ASCII digits
+
+
+  Serial.print("      TDS=  ");
+  Serial.println(tdsValue);
+  delay(10);        // delay in between reads for stability
+
+   return tdsValue;
+
+}

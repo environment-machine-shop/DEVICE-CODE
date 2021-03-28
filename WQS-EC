@@ -1,0 +1,41 @@
+//Code for the electrical conductivity tester probe
+#include "DFRobot_EC.h"
+#include <EEPROM.h>
+
+#define SensorPinEC A3  //for Esp8266
+#define VREF 3.3
+#define RESO 4095
+float voltage,ecValue,temperatureEC;
+DFRobot_EC ec;
+int MeasurementsToAverageEC_V = 20;
+float avgEC_V;
+float voltageEC;
+
+
+
+float getEC(float t)
+{
+
+
+  for(int i = 0; i < MeasurementsToAverageEC_V; ++i)
+  {
+    avgEC_V += analogRead(SensorPinEC);
+    delay(10);
+  }
+  avgEC_V /= MeasurementsToAverageEC_V;
+
+
+
+  temperatureEC = t;
+  voltageEC = avgEC_V/RESO*3300;
+  ecValue =  ec.readEC(voltageEC,temperatureEC);
+
+   Serial.print(ecValue);
+   Serial.println("ms/cm  ");
+   ec.calibration(voltage,temperatureEC);
+
+return ecValue;
+
+
+
+}
